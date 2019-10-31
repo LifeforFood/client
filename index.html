@@ -8,13 +8,45 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel='stylesheet' href='./style/style.css'>
+    <meta name="google-signin-client_id" content="1018057422505-gmj3d5c68r5jd3dpj4dt56n2fu8acuom.apps.googleusercontent.com">
+    
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
     <title>Life For Food</title>
   </head>
   <body>
-    <h1>Life For Food</h1>
+      <a href="#" id='signout' onclick="signOut();">Sign out</a>
+    <div id="login">
+      <div class="wrapper1" >
+        <div class="container1">
+          <a href="" class="fb-login social-login">
+            Login with Facebook
+          </a>
+            <a href="" class="google-login social-loging g-signin2" data-onsuccess="onSignIn">
+            Login with Google
+          </a>
+          <p class="seperator" >-OR-</p>
+          <form  id="triggerSignin">
+            <div class="group">
+              <label for="email">Email:</label>
+              <input type="email" id="email">
+            </div>
+            <div class="group">
+              <label for="password">Password:</label>
+              <input id="password" type="password" name="password">
+            </div>
+            <a href="" class="forget-link">Forgot password?</a>
+            <input type="submit" value="Login">
+          </form>
+        </div>
+        </div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
