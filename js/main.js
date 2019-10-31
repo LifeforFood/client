@@ -1,6 +1,7 @@
 $(document).ready(function () {
   $('#signout').hide();
   $('#login').show();
+  $('#mainBody').hide()
   checkLogin()
 
   $('#triggerSignin').submit(function (e) {
@@ -29,6 +30,7 @@ function signinM () {
       localStorage.setItem('token', data.token)
       $('#login').hide()
       $('#signout').show()
+      $('#mainBody').show()
     })
     .catch(err => {
       Swal.fire({
@@ -45,9 +47,11 @@ function checkLogin () {
   if(localStorage.getItem('token')) {
     $('#signout').show()
     $('#login').hide()
+    $('#mainBody').show()
   } else {
     $('#signout').hide()
     $('#login').show()
+    $('#mainBody').hide()
   }
 }
 
@@ -70,6 +74,9 @@ function onSignIn(googleUser) {
         showConfirmButton: false,
         timer: 700
       })
+      $('#login').hide()
+      $('#signout').show()
+      $('#mainBody').show()
     })
     .catch(err => {
       Swal.fire({
