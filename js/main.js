@@ -25,7 +25,7 @@ function signinM () {
         position: 'top-end',
         type: 'success',
         title: 'success login',
-        timer: 500
+        timer: 1200
       })
       localStorage.setItem('token', data.token)
       $('#login').hide()
@@ -72,7 +72,7 @@ function onSignIn(googleUser) {
         type: 'success',
         title: 'You\'re logged in',
         showConfirmButton: false,
-        timer: 700
+        timer: 100
       })
       $('#login').hide()
       $('#signout').show()
@@ -95,7 +95,8 @@ function signOut() {
   auth2.signOut().then(function () {
     localStorage.removeItem('token')
     $('#signout').hide();
-    $('#login').show()
+    $('#login').show();
+    $('#mainBody').hide()
     console.log('User signed out.');
   });
 }
