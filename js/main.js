@@ -3,6 +3,7 @@ $(document).ready(function () {
   $('#login').show();
   $('#mainBody').hide()
   $('#register').hide()
+  $('#detailDesc').empty().hide();
   checkLogin()
 
   $('#triggerSignin').submit(function (e) {
@@ -42,12 +43,14 @@ function goToRegister () {
   $('#mainBody').hide();
   $('#register').show();
   $('#detailPage').hide();
+  $('#detailDesc').empty();
 }
 
 function backLogin () {
   $('#login').show();
   $('#mainBody').hide();
   $('#register').hide();
+  $('#detailDesc').empty();
   $('#detailPage').hide();
 }
 
@@ -191,6 +194,7 @@ function onSignIn(googleUser) {
 function goHome () {
   $('#mainBody').show();
   $('#detailPage').hide();
+  $('#detailDesc').empty().hide();
 }
 
 function signOut() {
@@ -250,6 +254,7 @@ function fetchData(){
 }
 
 function addToFav (id, name) {
+  $('#detailDesc').empty();
   $.ajax({
     method: 'post',
     url: 'http://localhost:3000/fav',
@@ -316,6 +321,8 @@ function fetchFavorite () {
 var idData =''
 var tempFav = []
 function showMyFav (id) {
+  $('#detailDesc').empty();
+
   idData = id
   $('#detailPage').show();
   $('#detailFavorite').empty()
