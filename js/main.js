@@ -163,7 +163,10 @@ function signOut() {
 function fetchData(){
   $.ajax({
     method : 'GET',
-    url : `http://localhost:3000/zomato/restaurants/74/search?filter=pondok indah`
+    url : `http://localhost:3000/zomato/restaurants/74/search?filter=pondok indah`,
+    headers: {
+      token: localStorage.getItem('token')
+    }
   })
   .done(data=>{
     $('#cards').empty()
@@ -198,7 +201,10 @@ $('#formSearch').submit(function(e){
   e.preventDefault()
   $.ajax({
     method : 'GET',
-    url : `http://localhost:3000/zomato/restaurants/74/search?filter=${$('#searchBox').val()}`
+    url : `http://localhost:3000/zomato/restaurants/74/search?filter=${$('#searchBox').val()}`,
+    headers: {
+      token: localStorage.getItem('token')
+    }
   })
   .done(data=>{
     $('#cards').empty()
@@ -238,6 +244,9 @@ function initMap(lat, lng) {
   $.ajax({
     method : 'POST',
     url : 'http://localhost:3000/directions',
+    headers: {
+      token: localStorage.getItem('token')
+    },
     data :{
       lat : lat,
       lng : lng
