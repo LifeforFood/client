@@ -2,6 +2,7 @@ $(document).ready(function () {
   $('#signout').hide();
   $('#login').show();
   $('#mainBody').hide()
+  $('#register').hide()
   checkLogin()
 
   $('#triggerSignin').submit(function (e) {
@@ -16,6 +17,14 @@ $(document).ready(function () {
     const newPassword = $('#passwordR').val();
     signupM( newUsername, newEmail, newPassword )
   })
+})
+
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000
 })
 
 
@@ -79,6 +88,7 @@ function signinM () {
         timer: 1200
       })
       localStorage.setItem('token', data.token)
+      fetchData()
       $('#login').hide()
       $('#signout').show()
       $('#mainBody').show()
@@ -103,13 +113,12 @@ function checkLogin () {
     $('#signout').show()
     $('#login').hide()
     $('#mainBody').show()
-    fetchData()
     $('#register').hide()
+    fetchData()
   } else {
     $('#signout').hide()
     $('#login').show()
     $('#mainBody').hide()
-    fetchData()
   }
 }
 
@@ -123,14 +132,8 @@ function onSignIn(googleUser) {
     }
   })  
     .then(data => {
+      fetchData()
       localStorage.setItem('token', data.token)
-      Swal.fire({
-        position: 'top-start',
-        type: 'success',
-        title: 'You\'re logged in',
-        showConfirmButton: false,
-        timer: 100
-      })
       $('#login').hide()
       $('#signout').show()
       $('#mainBody').show()
