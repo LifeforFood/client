@@ -8,7 +8,58 @@ $(document).ready(function () {
     e.preventDefault();
     signinM()
   })
+
+  $('#triggerSignup').submit(function (e) {
+    e.preventDefault();
+    const newUsername = $('#usernameR').val();
+    const newEmail = $('#emailR').val();
+    const newPassword = $('#passwordR').val();
+    signupM( newUsername, newEmail, newPassword )
+  })
 })
+
+
+function goToRegister () {
+  $('#login').hide();
+  $('#mainBody').hide();
+  $('#register').show();
+}
+function backLogin () {
+  $('#login').show();
+  $('#mainBody').hide();
+  $('#register').hide()
+}
+
+function signupM ( username, email, password ) {
+  $.ajax({
+    method: 'post',
+    url: 'http://localhost:3000/signup',
+    data: { username, email, password }
+  })
+    .then(data => {
+      $('#usernameR').val('');
+      $('#emailR').val('');
+      $('#passwordR').val('');
+      localStorage.setItem('token', data.token)
+      Swal.fire({
+        type: 'success',
+        title: 'Register success',
+        text: data.msg
+      })
+      $('#register').hide();
+      $('#login').hide();
+      $('#mainBody').show();
+      $('#signout').show()
+    })
+    .catch(err => {
+      Swal.fire({
+        position: 'bottom-end',
+        type: 'warning',
+        title: 'OOpss',
+        text: err.responseJSON.msg
+      })
+    })
+}
 
 
 function signinM () {
@@ -31,6 +82,8 @@ function signinM () {
       $('#login').hide()
       $('#signout').show()
       $('#mainBody').show()
+      $('#email').val('')
+      $('#password').val('')
     })
     .catch(err => {
       Swal.fire({
@@ -38,7 +91,9 @@ function signinM () {
         animation: false,
         customClass: {
           popup: 'animated tada'
-        }
+        },
+        type: 'info',
+        text: err.responseJSON.msg
       })
     })
 }
@@ -49,6 +104,7 @@ function checkLogin () {
     $('#login').hide()
     $('#mainBody').show()
     fetchData()
+    $('#register').hide()
   } else {
     $('#signout').hide()
     $('#login').show()

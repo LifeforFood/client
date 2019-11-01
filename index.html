@@ -13,7 +13,6 @@
     <script src="sweetalert2.min.js"></script>
     <link rel="stylesheet" href="sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill"></script>
     <title>Life For Food</title>
   </head>
   <body>
@@ -34,6 +33,7 @@
       </div>
     </nav>
 
+    <!-- LOGIN -->
     
     <div id="login">
       <div class="wrapper1" >
@@ -51,12 +51,39 @@
               <label for="password">Password:</label>
               <input id="password" type="password" name="password">
             </div>
-            <a href="" class="forget-link">Forgot password?</a>
+            <a href='#' onclick='goToRegister()'>dont have account?</a>
             <input type="submit" value="Login">
+          </form>
+          </div>
+        </div>
+    </div>
+
+    <!-- REGISTER -->
+
+    <div id="register">
+      <div class="wrapper1" >
+        <div class="container1">
+          <p class="seperator" >Create New Account</p>
+          <form  id="triggerSignup">
+            <div class="group">
+              <label for="username">Username:</label>
+              <input type="username" id="usernameR">
+            </div>
+            <div class="group">
+              <label for="email">Email:</label>
+              <input type="email" id="emailR">
+            </div>
+            <div class="group">
+              <label for="password">Password:</label>
+              <input id="passwordR" type="password" name="password">
+            </div>
+            <a href='#' onclick="backLogin()">back login</a><br>
+            <input type="submit" value="Register">
           </form>
         </div>
         </div>
     </div>
+
     <div id='mainBody' class="container-fluid" style="margin: 0; padding: 0;">
       <div class="">
         <!-- jumbotron -->
