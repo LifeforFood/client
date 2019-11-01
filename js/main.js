@@ -2,6 +2,7 @@ $(document).ready(function () {
   $('#signout').hide();
   $('#login').show();
   $('#mainBody').hide()
+  $('#register').hide()
   checkLogin()
 
   $('#triggerSignin').submit(function (e) {
@@ -16,6 +17,14 @@ $(document).ready(function () {
     const newPassword = $('#passwordR').val();
     signupM( newUsername, newEmail, newPassword )
   })
+})
+
+
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000
 })
 
 
@@ -79,6 +88,7 @@ function signinM () {
         timer: 1200
       })
       localStorage.setItem('token', data.token)
+      fetchData()
       $('#login').hide()
       $('#signout').show()
       $('#mainBody').show()
@@ -103,13 +113,12 @@ function checkLogin () {
     $('#signout').show()
     $('#login').hide()
     $('#mainBody').show()
-    fetchData()
     $('#register').hide()
+    fetchData()
   } else {
     $('#signout').hide()
     $('#login').show()
     $('#mainBody').hide()
-    fetchData()
   }
 }
 
@@ -123,14 +132,8 @@ function onSignIn(googleUser) {
     }
   })  
     .then(data => {
+      fetchData()
       localStorage.setItem('token', data.token)
-      Swal.fire({
-        position: 'top-start',
-        type: 'success',
-        title: 'You\'re logged in',
-        showConfirmButton: false,
-        timer: 100
-      })
       $('#login').hide()
       $('#signout').show()
       $('#mainBody').show()
@@ -159,23 +162,30 @@ function signOut() {
 
 function fetchData(){
   $.ajax({
-    url: 'http://localhost:3000/zomato/restaurants/74',
-    method: 'GET'
+    url: 'http://localhost:3000/zomato/restaurants',
+    method: 'GET',
+    headers: {
+      token: localStorage.getItem('token')
+    }
   })
     .done(restaurants=>{
-      restaurants.collections.forEach(restaurant=>{
-        const collection = restaurant.collection
-        console.log(collection);
+      Toast.fire({
+        type: 'success',
+        title: 'Fetching Restaurant'
+      })
+      restaurants.forEach(restaurant=>{
+        console.log(restaurant);
         $('#cards').append(`
           <div class="col-md-4">
             <div class="card mb-4 shadow-sm d-flex align">
-              <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${collection.image_url}" width="100%" height="225" >
+              <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
               <div class="card-body">
-                <p class="card-text" style="height: 100px" >${collection.description}</p>
+                <p class="card-text" style="height: 100px" >${restaurant.restaurant.name}</p>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary">Location</button>
+                    <button class='btn btn-outline-danger btn-sm' onclick='add>Fav</button>
                   </div>
                   <small class="text-muted">4/5 Star</small>
                 </div>
