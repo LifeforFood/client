@@ -17,6 +17,7 @@ $(document).ready(function () {
     const newPassword = $('#passwordR').val();
     signupM( newUsername, newEmail, newPassword )
   })
+
 })
 
 
@@ -27,12 +28,12 @@ const Toast = Swal.mixin({
   timer: 2000
 })
 
-
 function goToRegister () {
   $('#login').hide();
   $('#mainBody').hide();
   $('#register').show();
 }
+
 function backLogin () {
   $('#login').show();
   $('#mainBody').hide();
@@ -69,7 +70,6 @@ function signupM ( username, email, password ) {
       })
     })
 }
-
 
 function signinM () {
   const email = $('#email').val();
@@ -195,6 +195,100 @@ function fetchData(){
   .fail(err=>{
     console.log(err)
   })
+}
+
+function random(){
+  $.ajax({
+    url: 'http://localhost:3000/zomato/random',
+    method: 'GET',
+    headers: {
+      token: localStorage.getItem('token')
+    }
+  })
+    .done(({restaurant})=>{
+      $('#random').empty()
+      $('#random').append(`
+        <div class="card mb-4 shadow-sm d-flex align">
+          <img class="bd-placeholder-img card-img-top" style="object-fit: cover;" src="${restaurant.featured_image}" width="100%" height="225" >
+          <div class="card-body">
+            <p class="card-text font-weight-bold" style="height: 50px" >${restaurant.name}</p>
+            <p class="card-text text-muted" style="height: 100px" >${restaurant.location.address}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
+                <button onclick="initMap(${restaurant.location.latitude}, ${restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
+              </div>
+              <div class="d-flex align-items-center" id="botBtn">
+                <button class="btn btn-danger m-2" data-toggle="modal" data-target="#exampleModal">Decide</button>
+                <small class="text-muted">${restaurant.user_rating.aggregate_rating}/5 Star</small>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                  <div id="newDecide">
+                    <button class="btn btn-warning" onclick="yesNo()">Decide</button>
+                  </div>
+                  <div id="decision">
+                  </div>
+                  <div id="randomClose">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `)
+      console.log(restaurant);
+    })
+    .fail(err=>{
+      console.log(err)
+    })
+}
+
+function yesNo(){
+  console.log(123);
+  $.ajax({
+    url: 'http://localhost:3000/yesno',
+    method: 'GET'
+  })
+    .done(obj=>{
+      $('#modal-body').empty()
+      $('#modal-body').append(`
+        <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${obj.image}" width="100%" height="225" >        
+      `)
+      if(obj.answer == 'yes'){
+        $('#decision').empty()
+        $('#decision').append(`
+          <h3>LET'S GO</h3>
+        `)
+        $('#newDecide').empty()
+      }
+      else{
+        $('#decision').empty()
+        $('#decision').append(`
+        <h3>NO</h3>
+        `)
+        $('#newDecide').empty()
+        $('#botBtn').prepend(`
+          <button class="btn btn-warning m-2" onclick="random()">Random Again</button>
+        `)
+      }
+    })
+    .fail(err=>{
+      console.log(err)
+    })
 }
 
 $('#formSearch').submit(function(e){

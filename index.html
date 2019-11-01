@@ -25,7 +25,7 @@
     </div>
 
     <!-- navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
       <a class="navbar-brand" href="#">Life For Food</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -37,7 +37,7 @@
             <a class="nav-link" href="#" disabled>Food<span class="sr-only">(current)</span></a>
           </li>
         </ul>
-        <button class="btn btn-outline-success my-2 my-sm-0" id='signout' onclick='signOut()'>Sign out</button>
+        <button class="btn btn-warning my-2 my-sm-0" id='signout' onclick='signOut()'>Sign out</button>
       </div>
     </nav>
 
@@ -102,33 +102,21 @@
             <!-- Text -->
             <h5 class="text-white">Temukan restoran, kafe, dan bar terbaik di Jakarta</h5>
             <!-- input group -->
-            <div class="input-group mb-3 d-flex justify-content-center">
+            <div class="input-group mb-5 d-flex justify-content-center">
               <div class="input-group-append" style="width: 100vh;">
               <form id="formSearch" class="col-md-10 d-flex">
                 <input id="searchBox" type="text" class="form-control" placeholder="Nama Restoran Pilihanmu" aria-label="Nama Restoran Pilihanmu" aria-describedby="button-addon2">
                 <button class="btn btn-danger ml-2 rounded" type="sumbit" id="button-addon2">Search</button>
               </form>
-              
-              </div>
             </div>
+          </div>
+          <button class="btn btn-warning" onclick="random()">Try Random</button>
           </div>
         </div>
-
+        
         <!-- random -->
-        <div class="container mt-5" id="random" style="display: none;">
-          <div class="card mb-4 shadow-sm d-flex align">
-            <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="./public/food.png" width="100%" height="225" >
-            <div class="card-body">
-              <p class="card-text" style="height: 100px" >Title</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Location</button>
-                </div>
-                <small class="text-muted">4/5 Star</small>
-              </div>
-            </div>
-          </div>
+        <div class="container mt-3" id="random">
+          
         </div>
         
         <!-- cards -->
