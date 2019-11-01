@@ -114,6 +114,32 @@ function checkLogin () {
     $('#login').hide()
     $('#mainBody').show()
     $('#register').hide()
+    $('#favorites').empty()
+    fetchFavorite()
+      .then(data => {
+        $('#favorites').append(`
+          <div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              ${data.length} Fav
+            </button>
+            <div class="dropdown-menu">
+
+            </div>
+          </div>
+        `)
+        data.forEach(el => {
+          console.log(el)
+          $('.dropdown-menu').append(`
+            <a class="dropdown-item" href="#">${el.name}</a>
+          `)
+        })
+      })
+      .catch(err => {
+        Toast.fire({
+          type: 'warning',
+          title: err
+        })
+      })
     fetchData()
   } else {
     $('#signout').hide()
@@ -170,6 +196,11 @@ function fetchData(){
   })
   .done(data=>{
     $('#cards').empty()
+
+    Toast.fire({
+      type: 'success',
+      title: 'Fetching Restaurant'
+    })
     data.restaurants.forEach(restaurant=>{
 
       $('#cards').append(`
@@ -183,6 +214,7 @@ function fetchData(){
                 <div class="btn-group">
                   <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                   <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
+                  <button onclick='addToFav("${restaurant.restaurant.id}","${restaurant.restaurant.name}")' class='btn btn-outline-danger btn-sm'>Add Fav</button>
                 </div>
                 <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
               </div>
@@ -193,8 +225,94 @@ function fetchData(){
     })
   })
   .fail(err=>{
-    console.log(err)
+    Toast.fire({
+      type: 'warning',
+      title: err.responseJSON
+    })
   })
+}
+
+function addToFav (id, name) {
+  $.ajax({
+    method: 'post',
+    url: 'http://localhost:3000/fav',
+    headers: {
+      token: localStorage.getItem('token')
+    },
+    data: {
+      zomatoId: id,
+      name
+    }
+  })
+    .then(data => {
+      Toast.fire({
+        type: 'success',
+        title: data.msg
+      })
+    })
+    .catch(err => {
+      Toast.fire({
+        type: 'warning',
+        title: err.responseJSON.msg
+      })
+    })
+}
+
+
+function fetchFavorite () {
+  return new Promise ((resolve, reject) => {
+    $.ajax({
+      method: 'get',
+      url: 'http://localhost:3000/fav',
+      headers: {
+        token: localStorage.getItem('token')
+      }
+    })
+      .then(data => {
+        resolve(data)
+      })
+      .catch(err => {
+        reject(err.responseJSON.msg)
+      })
+  })
+}
+
+function showMyFav () {
+  $('#cards').empty()
+  fetchFavorite ()
+    .then(data => {
+      console.log(data)
+      data.forEach((el, i) => {
+        $.ajax({
+          method: 'get',
+          url: `http://localhost:3000/zomato/${ el.zomatoId }`,
+          headers: {
+            token: localStorage.getItem('token')
+          }
+        })
+          .then(restaurant => {
+            $('#cards').append(`
+              <div class="col-md-4">
+                <div class="card mb-4 shadow-sm d-flex align">
+                  <img class="bd-placeholder-img card-img-top" style="object-fit: cover;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
+                  <div class="card-body">
+                    <p class="card-text font-weight-bold" style="height: 50px" >${restaurant.restaurant.name}</p>
+                    <p class="card-text text-muted" style="height: 100px" >${restaurant.restaurant.location.address}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
+                        <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
+                        <button onclick='addToFav("${restaurant.restaurant.id}")' class='btn btn-outline-danger btn-sm'>Add Fav</button>
+                      </div>
+                      <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `)
+          })
+      })
+    })
 }
 
 $('#formSearch').submit(function(e){
@@ -220,6 +338,7 @@ $('#formSearch').submit(function(e){
               <div class="btn-group">
                 <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                 <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
+                <button onclick='addToFav("${restaurant.restaurant.id}")' class='btn btn-outline-danger btn-sm'>Add Fav</button>
               </div>
               <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
             </div>
@@ -230,11 +349,17 @@ $('#formSearch').submit(function(e){
     })
   })
   .fail(err=>{
-    console.log(err)
+    Toast.fire({
+      type: 'error',
+      title: err.responseJSON
+    })
   })
 })
 
+
+
 // MAP FUNCTION
+
 
 var map;
 function initMap(lat, lng) {
