@@ -1,7 +1,6 @@
 $(document).ready(function () {
   $('#signout').hide();
   $('#login').show();
-  $('#detailPage').hide();
   $('#mainBody').hide()
   $('#register').hide()
   checkLogin()
@@ -306,6 +305,7 @@ function fetchFavorite () {
 
 var tempFav = []
 function showMyFav (id) {
+  $('#detailPage').show()
   $('#imageRandomForFavorite').empty();
   console.log(id)
   $('#mainBody').hide();
@@ -414,6 +414,7 @@ function fetchingRandomRestaurant () {
         }
       })
         .then(res => {
+          console.log(res)
           const data = res.restaurant
           temp.push({ featured_image: data.featured_image, name: data.name })
         })
@@ -558,8 +559,6 @@ $('#formSearch').submit(function(e){
 })
 
 
-<<<<<<< HEAD
-=======
 //SHOW DETAIL
 
 function showDetail(id){
@@ -572,109 +571,105 @@ function showDetail(id){
     }
   })
   .done(data=>{
-    $('#detail').append(`
-  
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-1">
+    const lat = Number(data.location.latitude)
+    const lng = Number(data.location.longitude)
+
+    $('#detailDesc').append(`
+    <div class="d-flex flex-column">
+        <div class="rounded bg-light border" style="margin-top: 50px;">
+          <img src="${data.featured_image}" style="width: 100%; object-fit: cover; height: 30vh;" class="rounded-top">
+          <div class="d-flex justify-content-between align-items-center" style="margin:10px">
+            <div class="d-flex justify-content-center flex-column m-4">
+              <small class="text-muted">${data.cuisines}</small>
+              <h4>${data.name}</h4>
+          </div>
+          <div class="d-flex flex-column align-items-center m-2">
+            <button class="btn btn-success">
+              ${data.user_rating.aggregate_rating}/5.0
+            </button>
+            <small>${data.user_rating.votes} votes</small>
+          </div>  
         </div>
-        <div class="col-sm-7">
-          <div class="d-flex flex-column">
-            <div class="rounded bg-light border" style="margin-top: 50px;">
-              <img src="${data.featured_image}" style="width: 100%; object-fit: cover; height: 30vh;" class="rounded-top">
-              <div class="d-flex justify-content-between align-items-center" style="margin:10px">
-                <div class="d-flex justify-content-center flex-column m-4">
-                  <small class="text-muted">${data.cuisines}</small>
-                  <h4>3 ${data.name}</h4>
-                </div>
-                <div class="d-flex flex-column align-items-center m-2">
-                  <button class="btn btn-success">
-                    ${data.user_rating.aggregate_rating}/5.0
-                  </button>
-                  <small>${data.user_rating.votes} votes</small>
-                </div>
+      </div>
+      <div style="width: 100%;">
+        <div class="rounded bg-light border" style="margin-top: 30px;">
+          <div class="container">
+            <div class="row">
+
+              <div class="col-sm m-3" id="contactFav">
+                <div><strong>Phone Number </strong></div>
+                <div class="text-success"><strong> ${data.phone_numbers} </strong></div>
+                <div style="margin-top: 15px;"><strong> Average Cost For Two </strong></div>
+                <div>Rp. ${data.average_cost_for_two}</div>
               </div>
-            </div>
-    
-            <div style="width: 100%;">
-              <div class="rounded bg-light border" style="margin-top: 30px;">
-                <div class="container">
-                  <div class="row">
-    
-                    <div class="col-sm m-3">
-                      <div><strong>Phone Number </strong></div>
-                      <div class="text-success"><strong> ${data.phone_numbers} </strong></div>
-                      <div style="margin-top: 15px;"><strong> Average Cost for Two </strong></div>
-                      <div>Rp. ${data.average_cost_for_two}</div>
-                    </div>
-    
-                    <div class="col-sm m-3">
-                      <div><strong>Address</strong></div>
-                      <small>${data.location.address}</small>
-                    </div>
-    
-                    <div class="col-sm m-3">
-                      <div class="d-flex flex-column">
-                        <div>
-                          <h5> More info</h5>
-                          <ul style="list-style-type: none;">
-                            <li>Dinner</li>
-                            <li>Cash</li>
-                            <li>Wifi</li>
-                          </ul>
-                        </div>
-                      </div>
+              <div class="col-sm m-3" id='addressFav'>
+                <div><strong>Address</strong></div>
+                <small>${data.location.address}</small>
+              </div>
+              <div class="col-sm m-3">
+                <div class="d-flex flex-column">
+                  <div>
+                    <h5>Highlights</h5>
+                    <div class='row' id='highlightLoop'>
+
+
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="rounded bg-light border" style="margin-top: 30px; margin-bottom: 30px;">
-              <div class="m-4">
-                <img src="https://b.zmtcdn.com/data/reviews_photos/985/21929b0b8763406fab51cb537601d985_1571796339.jpg" alt="" style="width: 100%;">
-              </div>
-            </div>
           </div>
         </div>
-    
-    
-        <div class="col-sm-4" style="margin-top: 50px;">
-          <div class="d-flex flex-wrap">
-            <div class="card m-1" style="width: 11rem;">
-              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
-              <div class="card-body">
-                <h6 class="card-title">Card title</h6>
-              </div>
-            </div>
-            <div class="card m-1" style="width: 11rem;">
-              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
-              <div class="card-body">
-                <h6 class="card-title">Card title</h6>
-              </div>
-            </div>
-            <div class="card m-1" style="width: 11rem;">
-              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
-              <div class="card-body">
-                <h6 class="card-title">Card title</h6>
-              </div>
-            </div>
-            <div class="card m-1" style="width: 11rem;">
-              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
-              <div class="card-body">
-                <h6 class="card-title">Card title</h6>
-              </div>
-            </div>
-          </div>
+      </div>
+      <div class="rounded bg-light border" style="margin-top: 30px; margin-bottom: 30px;">
+        <div id="map" class="m-4">
         </div>
       </div>
     </div>
     
     `)
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat , lng },
+      zoom: 16
+    });
+    marker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, lng),
+            map: map
+    })
+    $('#highlightLoop').empty()
+    data.highlights.forEach((el, i) => {
+      $('#highlightLoop').append(`
+      <div class='rowside'>${el}, </div>
+      `)
+    })
+
+    fetchingRandomRestaurant()
+    setTimeout(() => {
+      tempFav.forEach(el =>{
+        console.log("SINI------------")
+        console.log(el)
+        $('#imageRandomForFavorite').append(`
+        <div class="card m-1" style="width: 11rem;">
+          <img src="${el.featured_image}" class="card-img-top" style='height:200px'>
+          <div class="card-body">
+            <h6 class="card-title">${el.name}</h6>
+          </div>
+        </div>
+        `)     
+      })
+    }, 5000);
+
   })
+  .catch(err => {
+    Toast.fire({
+      type: 'error',
+      title: err.responseJSON.msg
+    })
+  })
+
  
   
 }
->>>>>>> progress desc
 
 // MAP FUNCTION
 
