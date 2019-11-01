@@ -28,6 +28,15 @@ const Toast = Swal.mixin({
   timer: 2000
 })
 
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger'
+  },
+  buttonsStyling: false
+})
+
+
 function goToRegister () {
   $('#login').hide();
   $('#mainBody').hide();
@@ -118,7 +127,6 @@ function checkLogin () {
     $('#mainBody').show()
     $('#register').hide()
     $('#favorites').empty()
-  $('#detailPage').show();
     fetchFavorite()
       .then(data => {
         $('#favorites').append(`
@@ -180,6 +188,11 @@ function onSignIn(googleUser) {
     })
 }
 
+function goHome () {
+  $('#mainBody').show();
+  $('#detailPage').hide();
+}
+
 function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function () {
@@ -187,7 +200,6 @@ function signOut() {
     $('#signout').hide();
     $('#login').show();
     $('#mainBody').hide()
-    console.log('User signed out.');
   });
 }
 
@@ -238,8 +250,6 @@ function fetchData(){
 }
 
 function addToFav (id, name) {
-  $('#favorites').empty()
-  $('.dropdown-menu').empty()
   $.ajax({
     method: 'post',
     url: 'http://localhost:3000/fav',
@@ -259,6 +269,8 @@ function addToFav (id, name) {
       return fetchFavorite ()
     })
     .then(data => {
+      $('#favorites').empty()
+      $('.dropdown-menu').empty()
       $('#favorites').append(`
         <div class="btn-group">
           <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -270,7 +282,6 @@ function addToFav (id, name) {
         </div>
       `)
       data.forEach(el => {
-        console.log(el)
         $('.dropdown-menu').append(`
           <a class="dropdown-item" href="#" onclick='showMyFav("${el.zomatoId}")'>${el.name}</a>
         `)
@@ -302,12 +313,13 @@ function fetchFavorite () {
       })
   })
 }
-
+var idData =''
 var tempFav = []
 function showMyFav (id) {
-  $('#detailPage').show()
+  idData = id
+  $('#detailPage').show();
+  $('#detailFavorite').empty()
   $('#imageRandomForFavorite').empty();
-  console.log(id)
   $('#mainBody').hide();
   $('#detailFavorite').empty()
   $.ajax({
@@ -319,7 +331,6 @@ function showMyFav (id) {
   })
     .then(restaurant => {
       const data = restaurant
-      console.log(data)
       $('#detailFavorite').append(`
       <div class="d-flex flex-column">
         <div class="rounded bg-light border" style="margin-top: 50px;">
@@ -329,11 +340,14 @@ function showMyFav (id) {
               <small class="text-muted">${data.cuisines}</small>
               <h4>${data.name}</h4>
           </div>
-          <div class="d-flex flex-column align-items-center m-2">
-            <button class="btn btn-success">
-              ${data.user_rating.aggregate_rating}/5.0
-            </button>
-            <small>${data.user_rating.votes} votes</small>
+          <div class="d-flex flex-row align-items-center m-2" id='removeFav'>
+            <button class='btn btn-outline-danger btn-sm' onclick='removeFavo("${id}")'>Remove Fav</button>
+            <div class="d-flex flex-column align-items-center m-2">
+              <button class="btn btn-success">
+                ${data.user_rating.aggregate_rating}/5.0
+              </button>
+              <small>${data.user_rating.votes} votes</small>
+            </div>
           </div>  
         </div>
       </div>
@@ -381,6 +395,7 @@ function showMyFav (id) {
         `)
       })
 
+
       fetchingRandomRestaurant()
       setTimeout(() => {
         tempFav.forEach(el =>{
@@ -403,6 +418,72 @@ function showMyFav (id) {
     })
 }
 
+function removeFavo (id) {
+  swalWithBootstrapButtons.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel!',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.value) {
+      $.ajax({
+        method: 'delete',
+        url: `http://localhost:3000/fav/${id}`,
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+        .then(data => {
+          swalWithBootstrapButtons.fire(
+            'Deleted!',
+            data.msg,
+            'success'
+          )
+          return fetchFavorite()
+        })
+        .then(data => {
+          $('#favorites').empty()
+          $('.dropdown-menu').empty()
+          $('#favorites').append(`
+            <div class="btn-group">
+              <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                ${data.length} Fav
+              </button>
+              <div class="dropdown-menu">
+
+              </div>
+            </div>
+          `)
+          data.forEach(el => {
+            $('.dropdown-menu').append(`
+              <a class="dropdown-item" href="#" onclick='showMyFav("${el.zomatoId}","${el._id}")'>${el.name}</a>
+            `)
+          })
+        })
+        .catch(err => {
+          Toast.fire({
+            type: 'info',
+            title: 'oops',
+            text: err.responseJSON.msg
+          })
+        })
+    } else if (
+      /* Read more about handling dismissals below */
+      result.dismiss === Swal.DismissReason.cancel
+    ) {
+      swalWithBootstrapButtons.fire(
+        'Cancelled',
+        'Your imaginary Todo is safe :)',
+        'error'
+      )
+    }
+  })
+}
+
+
 function fetchingRandomRestaurant () {
   let temp = []
     for(let i=0; i<6; i++){
@@ -418,7 +499,12 @@ function fetchingRandomRestaurant () {
           const data = res.restaurant
           temp.push({ featured_image: data.featured_image, name: data.name })
         })
-        .catch(console.log)
+        .catch(err => {
+          Toast.fire({
+            type: 'error',
+            title: 'something wrong'
+          })
+        })
     }
   tempFav = temp
 }
