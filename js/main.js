@@ -164,22 +164,21 @@ function fetchData(){
   })
   .done(data=>{
     $('#cards').empty()
-    console.log('MASUK SEARCH')
-
     data.restaurants.forEach(restaurant=>{
 
       $('#cards').append(`
         <div class="col-md-4">
           <div class="card mb-4 shadow-sm d-flex align">
-            <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
+            <img class="bd-placeholder-img card-img-top" style="object-fit: cover;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
             <div class="card-body">
-              <p class="card-text" style="height: 100px" >${restaurant.restaurant.name}</p>
+              <p class="card-text font-weight-bold" style="height: 50px" >${restaurant.restaurant.name}</p>
+              <p class="card-text text-muted" style="height: 100px" >${restaurant.restaurant.location.address}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                   <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                   <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
                 </div>
-                <small class="text-muted">4/5 Star</small>
+                <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
               </div>
             </div>
           </div>
@@ -200,25 +199,24 @@ $('#formSearch').submit(function(e){
   })
   .done(data=>{
     $('#cards').empty()
-    console.log('MASUK SEARCH')
-
     data.restaurants.forEach(restaurant=>{
       $('#cards').append(`
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm d-flex align">
-            <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
-            <div class="card-body">
-              <p class="card-text" style="height: 100px" >${restaurant.restaurant.name}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
-                  <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
-                </div>
-                <small class="text-muted">4/5 Star</small>
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm d-flex align">
+          <img class="bd-placeholder-img card-img-top" style="object-fit: cover;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
+          <div class="card-body">
+            <p class="card-text font-weight-bold" style="height: 50px" >${restaurant.restaurant.name}</p>
+            <p class="card-text text-muted" style="height: 100px" >${restaurant.restaurant.location.address}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
+                <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
               </div>
+              <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
             </div>
           </div>
         </div>
+      </div>
       `)
     })
   })
@@ -231,14 +229,56 @@ $('#formSearch').submit(function(e){
 
 var map;
 function initMap(lat, lng) {
-  console.log('MASUK MAP')
-  $(`#myMap`).modal("show")
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat, lng},
-    zoom: 16
-  });
-  marker = new google.maps.Marker({
-          position: new google.maps.LatLng(lat, lng),
-          map: map
-      })
+  let jarak
+  let waktu
+  $(`#myMap`).empty()
+  $.ajax({
+    method : 'POST',
+    url : 'http://localhost:3000/directions',
+    data :{
+      lat : lat,
+      lng : lng
+    }
+  })
+  .done(data=>{
+    jarak = data.routes[0].legs[0].distance.text
+    waktu = data.routes[0].legs[0].duration.text
+    $(`#myMap`).append(`
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Location</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div id="map"></div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <p> Estimasi jarak perjalanan ${jarak} </p>
+                <p> Estimasi lama perjalanan ${waktu} </p>
+                <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+      </div>
+    `)
+    $(`#myMap`).modal("show")
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat, lng},
+      zoom: 16
+    });
+    marker = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, lng),
+            map: map
+        })
+    })
+  .fail(err=>{
+    console.log(err)
+  })
+ 
+
+  
+
 }
