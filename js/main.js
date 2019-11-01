@@ -162,7 +162,6 @@ function signOut() {
 
 function fetchData(){
   $.ajax({
-<<<<<<< HEAD
     method : 'GET',
     url : `http://localhost:3000/zomato/restaurants/74/search?filter=pondok indah`
   })
@@ -181,34 +180,6 @@ function fetchData(){
                 <div class="btn-group">
                   <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                   <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
-=======
-    url: 'http://localhost:3000/zomato/restaurants',
-    method: 'GET',
-    headers: {
-      token: localStorage.getItem('token')
-    }
-  })
-    .done(restaurants=>{
-      Toast.fire({
-        type: 'success',
-        title: 'Fetching Restaurant'
-      })
-      restaurants.forEach(restaurant=>{
-        console.log(restaurant);
-        $('#cards').append(`
-          <div class="col-md-4">
-            <div class="card mb-4 shadow-sm d-flex align">
-              <img class="bd-placeholder-img card-img-top" style="object-fit: contain;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
-              <div class="card-body">
-                <p class="card-text" style="height: 100px" >${restaurant.restaurant.name}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary">Location</button>
-                    <button class='btn btn-outline-danger btn-sm' onclick='add>Fav</button>
-                  </div>
-                  <small class="text-muted">4/5 Star</small>
->>>>>>> ba72e7d103b1f6200b270079c27510fd9d335f11
                 </div>
                 <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
               </div>
