@@ -218,7 +218,7 @@ function fetchData(){
               <p class="card-text text-muted" style="height: 100px" >${restaurant.restaurant.location.address}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
+                  <button onclick="showDetail('${restaurant.restaurant.id}')" type="button" class="btn btn-sm btn-outline-secondary">Description</button>
                   <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
                   <button onclick='addToFav("${restaurant.restaurant.id}","${restaurant.restaurant.name}")' class='btn btn-outline-danger btn-sm'>Add Fav</button>
                 </div>
@@ -464,6 +464,123 @@ $('#formSearch').submit(function(e){
 })
 
 
+<<<<<<< HEAD
+=======
+//SHOW DETAIL
+
+function showDetail(id){
+  $('#mainBody').hide()
+  $.ajax({
+    method : 'GET',
+    url : `http://localhost:3000/zomato/${id}`,
+    headers: {
+      token: localStorage.getItem('token')
+    }
+  })
+  .done(data=>{
+    $('#detail').append(`
+  
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-7">
+          <div class="d-flex flex-column">
+            <div class="rounded bg-light border" style="margin-top: 50px;">
+              <img src="${data.featured_image}" style="width: 100%; object-fit: cover; height: 30vh;" class="rounded-top">
+              <div class="d-flex justify-content-between align-items-center" style="margin:10px">
+                <div class="d-flex justify-content-center flex-column m-4">
+                  <small class="text-muted">${data.cuisines}</small>
+                  <h4>3 ${data.name}</h4>
+                </div>
+                <div class="d-flex flex-column align-items-center m-2">
+                  <button class="btn btn-success">
+                    ${data.user_rating.aggregate_rating}/5.0
+                  </button>
+                  <small>${data.user_rating.votes} votes</small>
+                </div>
+              </div>
+            </div>
+    
+            <div style="width: 100%;">
+              <div class="rounded bg-light border" style="margin-top: 30px;">
+                <div class="container">
+                  <div class="row">
+    
+                    <div class="col-sm m-3">
+                      <div><strong>Phone Number </strong></div>
+                      <div class="text-success"><strong> ${data.phone_numbers} </strong></div>
+                      <div style="margin-top: 15px;"><strong> Average Cost for Two </strong></div>
+                      <div>Rp. ${data.average_cost_for_two}</div>
+                    </div>
+    
+                    <div class="col-sm m-3">
+                      <div><strong>Address</strong></div>
+                      <small>${data.location.address}</small>
+                    </div>
+    
+                    <div class="col-sm m-3">
+                      <div class="d-flex flex-column">
+                        <div>
+                          <h5> More info</h5>
+                          <ul style="list-style-type: none;">
+                            <li>Dinner</li>
+                            <li>Cash</li>
+                            <li>Wifi</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="rounded bg-light border" style="margin-top: 30px; margin-bottom: 30px;">
+              <div class="m-4">
+                <img src="https://b.zmtcdn.com/data/reviews_photos/985/21929b0b8763406fab51cb537601d985_1571796339.jpg" alt="" style="width: 100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+    
+    
+        <div class="col-sm-4" style="margin-top: 50px;">
+          <div class="d-flex flex-wrap">
+            <div class="card m-1" style="width: 11rem;">
+              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
+              <div class="card-body">
+                <h6 class="card-title">Card title</h6>
+              </div>
+            </div>
+            <div class="card m-1" style="width: 11rem;">
+              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
+              <div class="card-body">
+                <h6 class="card-title">Card title</h6>
+              </div>
+            </div>
+            <div class="card m-1" style="width: 11rem;">
+              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
+              <div class="card-body">
+                <h6 class="card-title">Card title</h6>
+              </div>
+            </div>
+            <div class="card m-1" style="width: 11rem;">
+              <img src="https://images.unsplash.com/photo-1571942389648-078c07e6a28f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2689&q=80" class="card-img-top">
+              <div class="card-body">
+                <h6 class="card-title">Card title</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    `)
+  })
+ 
+  
+}
+>>>>>>> progress desc
 
 // MAP FUNCTION
 
