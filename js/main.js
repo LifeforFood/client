@@ -1,6 +1,7 @@
 $(document).ready(function () {
   $('#signout').hide();
   $('#login').show();
+  $('#detailPage').hide();
   $('#mainBody').hide()
   $('#register').hide()
   checkLogin()
@@ -32,11 +33,13 @@ function goToRegister () {
   $('#login').hide();
   $('#mainBody').hide();
   $('#register').show();
+  $('#detailPage').hide();
 }
 function backLogin () {
   $('#login').show();
   $('#mainBody').hide();
-  $('#register').hide()
+  $('#register').hide();
+  $('#detailPage').hide();
 }
 
 function signupM ( username, email, password ) {
@@ -94,6 +97,7 @@ function signinM () {
       $('#mainBody').show()
       $('#email').val('')
       $('#password').val('')
+      $('#detailPage').hide();
     })
     .catch(err => {
       Swal.fire({
@@ -115,6 +119,7 @@ function checkLogin () {
     $('#mainBody').show()
     $('#register').hide()
     $('#favorites').empty()
+  $('#detailPage').show();
     fetchFavorite()
       .then(data => {
         $('#favorites').append(`
@@ -130,7 +135,7 @@ function checkLogin () {
         data.forEach(el => {
           console.log(el)
           $('.dropdown-menu').append(`
-            <a class="dropdown-item" href="#">${el.name}</a>
+            <a class="dropdown-item" href="#" onclick='showMyFav("${el.zomatoId}")'>${el.name}</a>
           `)
         })
       })
@@ -162,6 +167,7 @@ function onSignIn(googleUser) {
       localStorage.setItem('token', data.token)
       $('#login').hide()
       $('#signout').show()
+      $('#detailPage').hide();
       $('#mainBody').show()
     })
     .catch(err => {
@@ -233,6 +239,8 @@ function fetchData(){
 }
 
 function addToFav (id, name) {
+  $('#favorites').empty()
+  $('.dropdown-menu').empty()
   $.ajax({
     method: 'post',
     url: 'http://localhost:3000/fav',
@@ -248,6 +256,25 @@ function addToFav (id, name) {
       Toast.fire({
         type: 'success',
         title: data.msg
+      })
+      return fetchFavorite ()
+    })
+    .then(data => {
+      $('#favorites').append(`
+        <div class="btn-group">
+          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            ${data.length} Fav
+          </button>
+          <div class="dropdown-menu">
+
+          </div>
+        </div>
+      `)
+      data.forEach(el => {
+        console.log(el)
+        $('.dropdown-menu').append(`
+          <a class="dropdown-item" href="#" onclick='showMyFav("${el.zomatoId}")'>${el.name}</a>
+        `)
       })
     })
     .catch(err => {
@@ -277,42 +304,122 @@ function fetchFavorite () {
   })
 }
 
-function showMyFav () {
-  $('#cards').empty()
-  fetchFavorite ()
-    .then(data => {
+var tempFav = []
+function showMyFav (id) {
+  $('#imageRandomForFavorite').empty();
+  console.log(id)
+  $('#mainBody').hide();
+  $('#detailFavorite').empty()
+  $.ajax({
+    method: 'get',
+    url: `http://localhost:3000/zomato/${ id }`,
+    headers: {
+      token: localStorage.getItem('token')
+    }
+  })
+    .then(restaurant => {
+      const data = restaurant
       console.log(data)
-      data.forEach((el, i) => {
-        $.ajax({
-          method: 'get',
-          url: `http://localhost:3000/zomato/${ el.zomatoId }`,
-          headers: {
-            token: localStorage.getItem('token')
-          }
-        })
-          .then(restaurant => {
-            $('#cards').append(`
-              <div class="col-md-4">
-                <div class="card mb-4 shadow-sm d-flex align">
-                  <img class="bd-placeholder-img card-img-top" style="object-fit: cover;" src="${restaurant.restaurant.featured_image}" width="100%" height="225" >
-                  <div class="card-body">
-                    <p class="card-text font-weight-bold" style="height: 50px" >${restaurant.restaurant.name}</p>
-                    <p class="card-text text-muted" style="height: 100px" >${restaurant.restaurant.location.address}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Description</button>
-                        <button onclick="initMap(${restaurant.restaurant.location.latitude}, ${restaurant.restaurant.location.longitude})" type="button" class="btn btn-sm btn-outline-secondary">Location</button>
-                        <button onclick='addToFav("${restaurant.restaurant.id}")' class='btn btn-outline-danger btn-sm'>Add Fav</button>
-                      </div>
-                      <small class="text-muted">${restaurant.restaurant.user_rating.aggregate_rating}/5 Star</small>
+      $('#detailFavorite').append(`
+      <div class="d-flex flex-column">
+        <div class="rounded bg-light border" style="margin-top: 50px;">
+          <img src="${data.featured_image}" style="width: 100%; object-fit: cover; height: 30vh;" class="rounded-top">
+          <div class="d-flex justify-content-between align-items-center" style="margin:10px">
+            <div class="d-flex justify-content-center flex-column m-4">
+              <small class="text-muted">${data.cuisines}</small>
+              <h4>${data.name}</h4>
+          </div>
+          <div class="d-flex flex-column align-items-center m-2">
+            <button class="btn btn-success">
+              ${data.user_rating.aggregate_rating}/5.0
+            </button>
+            <small>${data.user_rating.votes} votes</small>
+          </div>  
+        </div>
+      </div>
+      <div style="width: 100%;">
+        <div class="rounded bg-light border" style="margin-top: 30px;">
+          <div class="container">
+            <div class="row">
+
+              <div class="col-sm m-3" id="contactFav">
+                <div><strong>Phone Number </strong></div>
+                <div class="text-success"><strong> ${data.phone_numbers} </strong></div>
+                <div style="margin-top: 15px;"><strong> Average Cost For Two </strong></div>
+                <div>Rp. ${data.average_cost_for_two}</div>
+              </div>
+              <div class="col-sm m-3" id='addressFav'>
+                <div><strong>Address</strong></div>
+                <small>${data.location.address}</small>
+              </div>
+              <div class="col-sm m-3">
+                <div class="d-flex flex-column">
+                  <div>
+                    <h5>Highlights</h5>
+                    <div class='row' id='highlightLoop'>
+
+
                     </div>
                   </div>
                 </div>
               </div>
-            `)
-          })
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rounded bg-light border" style="margin-top: 30px; margin-bottom: 30px;">
+        <div class="m-4">
+          <img src="https://b.zmtcdn.com/data/reviews_photos/985/21929b0b8763406fab51cb537601d985_1571796339.jpg" alt="" style="width: 100%;">
+        </div>
+      </div>
+    </div>
+      `)
+      $('#highlightLoop').empty()
+      data.highlights.forEach((el, i) => {
+        $('#highlightLoop').append(`
+        <div class='rowside'>${el}, </div>
+        `)
+      })
+
+      fetchingRandomRestaurant()
+      setTimeout(() => {
+        tempFav.forEach(el =>{
+          $('#imageRandomForFavorite').append(`
+          <div class="card m-1" style="width: 11rem;">
+            <img src="${el.featured_image}" class="card-img-top" style='height:200px'>
+            <div class="card-body">
+              <h6 class="card-title">${el.name}</h6>
+            </div>
+          </div>
+          `)     
+        })
+      }, 5000);
+    })
+    .catch(err => {
+      Toast.fire({
+        type: 'error',
+        title: err.responseJSON.msg
       })
     })
+}
+
+function fetchingRandomRestaurant () {
+  let temp = []
+    for(let i=0; i<6; i++){
+      $.ajax({
+        method: 'get',
+        url: 'http://localhost:3000/zomato/random',
+        headers: {
+          token: localStorage.getItem('token')
+        }
+      })
+        .then(res => {
+          const data = res.restaurant
+          temp.push({ featured_image: data.featured_image, name: data.name })
+        })
+        .catch(console.log)
+    }
+  tempFav = temp
 }
 
 $('#formSearch').submit(function(e){

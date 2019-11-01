@@ -91,3 +91,11 @@ input[type="submit"]:hover{
   height: 400px;
   width: 770px;
 }
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.rowside {
+  margin-left: 5px;
+}
